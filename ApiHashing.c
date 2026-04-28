@@ -1,12 +1,7 @@
-/*
-	file that contians the Api Hashing replacements of 'GetModuleHandle' & 'GetProcAddress' WinAPIs
-*/
-
 #include <Windows.h>
 
 #include "Structs.h"
 #include "Common.h"
-
 
 
 FARPROC GetProcAddressH(HMODULE hModule, DWORD dwApiNameHash) {
@@ -36,8 +31,6 @@ FARPROC GetProcAddressH(HMODULE hModule, DWORD dwApiNameHash) {
 		CHAR* pFunctionName = (CHAR*)(pBase + FunctionNameArray[i]);
 		PVOID	pFunctionAddress = (PVOID)(pBase + FunctionAddressArray[FunctionOrdinalArray[i]]);
 
-		// hashing every function name `pFunctionName`
-		// if both hashes are equal, then we found the function we want 
 		if (dwApiNameHash == HASHA(pFunctionName)) {
 			return pFunctionAddress;
 		}
@@ -45,9 +38,6 @@ FARPROC GetProcAddressH(HMODULE hModule, DWORD dwApiNameHash) {
 
 	return NULL;
 }
-
-//------------------------------------------------------------------------------------------------------------------------------------------------//
-//------------------------------------------------------------------------------------------------------------------------------------------------//
 
 
 HMODULE GetModuleHandleH(DWORD dwModuleNameHash) {
